@@ -56,6 +56,25 @@ app.get("/logout", (req, res) => {
   });
 });
 
+app.get("/secrets", async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const result = await db.query("SELECT secret FROM users WHERE email = $1", 
+      [req.user.email]
+      );
+      const secret = result.rows[0].secret;
+      if (secret) {
+        res.render("secrets.ejs", { secret: secret });
+      } else {
+        res.render("secrets.ejs", { secret: "Jack Bauer is my hero." });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
 app.get("/submit", function (req, res) {
   if (req.isAuthenticated()) {
     res.render("submit.ejs");
