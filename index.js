@@ -139,6 +139,19 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/submit", async function (req, res) {
+  const submittedSecret = req.body.secret;
+  console.log(req.user);
+  try {
+    await db.query("UPDATE users SET secret = $1 WHERE email = $2",
+    [submittedSecret, req.user.email]
+    );
+    res.redirect("/secrets");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 passport.use(
   "local",
   new Strategy(async function verify(username, password, cb) {
